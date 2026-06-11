@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supply Chain Control Tower Copilot</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f6f8;color:#1a1a2e}
+.infor-global-header{background:#000;color:#fff;height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:1000;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.infor-left{display:flex;align-items:center;gap:12px}
+.infor-logo{display:flex;align-items:center;gap:6px;font-weight:700;font-size:.9rem}
+.infor-logo .logo-icon{width:20px;height:20px;background:#e02020;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:800}
+.infor-divider{width:1px;height:28px;background:rgba(255,255,255,.2)}
+.infor-app-label{font-size:.78rem;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:4px}
+.infor-app-label .app-badge{background:#1565c0;padding:2px 8px;border-radius:3px;font-size:.7rem;font-weight:600}
+.infor-center{font-size:.85rem;font-weight:500;display:flex;align-items:center;gap:6px}
+.infor-center .dropdown-arrow{font-size:.6rem;opacity:.6}
+.infor-right{display:flex;align-items:center;gap:16px}
+.infor-right button{background:none;border:none;color:rgba(255,255,255,.8);font-size:1rem;cursor:pointer;padding:6px;border-radius:4px;transition:.2s}
+.infor-right button:hover{background:rgba(255,255,255,.1);color:#fff}
+.infor-secondary-bar{background:linear-gradient(90deg,#1a237e,#283593);color:#fff;height:36px;display:flex;align-items:center;padding:0 20px;font-size:.78rem;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.infor-secondary-bar .breadcrumb{opacity:.7}
+.infor-secondary-bar .env-badge{background:rgba(255,255,255,.15);padding:2px 10px;border-radius:10px;font-size:.7rem}
+.header{background:#1a1a2e;color:#fff;padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:1.1rem;font-weight:600}
+.header .subtitle{font-size:.75rem;opacity:.7;margin-top:2px}
+.pella-brand{display:flex;align-items:center;gap:8px;font-size:.8rem;color:#555;padding:8px 20px;background:#fff;border-bottom:1px solid #e5e7eb}
+.pella-brand .pella-logo{font-weight:700;color:#1a1a2e;font-size:.85rem;letter-spacing:.5px}
+.pella-brand .pella-sub{font-size:.7rem;color:#888}
+.persona-toggle{display:flex;gap:4px;background:rgba(255,255,255,.1);border-radius:8px;padding:4px}
+.persona-btn{padding:8px 16px;border:none;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:500;background:transparent;color:rgba(255,255,255,.7);transition:.2s}
+.persona-btn.active{background:#4f6ef7;color:#fff}
+.main-layout{display:grid;grid-template-columns:1fr 340px;height:calc(100vh - 190px)}
+.content{padding:20px;overflow-y:auto}
+.row{display:grid;gap:16px;margin-bottom:16px}
+.row-3{grid-template-columns:repeat(3,1fr)}
+.row-4{grid-template-columns:repeat(4,1fr)}
+.row-2{grid-template-columns:repeat(2,1fr)}
+.card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.card h3{font-size:.9rem;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card h3 .icon{width:8px;height:8px;border-radius:50%;display:inline-block}
+.severity-high{background:#ef4444}
+.severity-med{background:#f59e0b}
+.severity-low{background:#22c55e}
+.alert-item{padding:10px 12px;border-radius:8px;margin-bottom:8px;font-size:.82rem;border-left:4px solid;background:#fafafa;transition:all .3s}
+.alert-item.high{border-color:#ef4444;background:#fef2f2}
+.alert-item.med{border-color:#f59e0b;background:#fffbeb}
+.alert-item.resolved{border-color:#22c55e;background:#f0fdf4;opacity:.7}
+.alert-item .alert-title{font-weight:600;margin-bottom:3px}
+.alert-item .alert-meta{font-size:.75rem;color:#666;margin-top:4px}
+.impact-metric{text-align:center;padding:14px;border-radius:8px;background:#f8fafc;margin-bottom:10px}
+.impact-metric .value{font-size:1.6rem;font-weight:700;color:#ef4444}
+.impact-metric .value.warn{color:#f59e0b}
+.impact-metric .label{font-size:.75rem;color:#666;margin-top:4px}
+.action-item{padding:12px;border-radius:8px;background:#f8fafc;margin-bottom:10px;transition:all .3s}
+.action-item.executed{background:#f0fdf4;border:1px solid #bbf7d0}
+.action-item .reason{font-size:.75rem;color:#666;font-style:italic;margin:6px 0 10px}
+.action-item .action-title{font-size:.82rem;font-weight:600}
+.action-btns{display:flex;gap:6px;flex-wrap:wrap}
+.action-btns button{padding:5px 12px;border:none;border-radius:5px;font-size:.73rem;cursor:pointer;font-weight:500;transition:.2s}
+.btn-primary{background:#4f6ef7;color:#fff}
+.btn-warn{background:#f59e0b;color:#fff}
+.btn-danger{background:#ef4444;color:#fff}
+.btn-success{background:#22c55e;color:#fff}
+.btn-outline{background:#fff;color:#4f6ef7;border:1px solid #4f6ef7 !important}
+.action-btns button:hover{opacity:.85;transform:translateY(-1px)}
+.action-btns button:disabled{opacity:.5;cursor:default;transform:none}
+.supplier-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:.82rem}
+.supplier-row:last-child{border:none}
+.risk-badge{padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:600}
+.risk-high{background:#fef2f2;color:#ef4444}
+.risk-med{background:#fffbeb;color:#d97706}
+.risk-low{background:#f0fdf4;color:#16a34a}
+.trend{font-size:.85rem;margin-left:6px}
+.confidence-ring{text-align:center;padding:20px}
+.confidence-value{font-size:2.8rem;font-weight:700;color:#f59e0b}
+.confidence-label{font-size:.8rem;color:#666;margin-top:8px;line-height:1.4}
+.timeline-item{display:flex;gap:12px;padding:8px 0;font-size:.8rem}
+.timeline-dot{width:10px;height:10px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.timeline-content .time{font-size:.7rem;color:#999}
+.sidebar{background:#fff;border-left:1px solid #e5e7eb;display:flex;flex-direction:column}
+.sidebar-header{padding:16px 20px;border-bottom:1px solid #e5e7eb;font-weight:600;font-size:.9rem}
+.chat-messages{flex:1;overflow-y:auto;padding:16px}
+.chat-msg{margin-bottom:12px;padding:10px 14px;border-radius:12px;font-size:.82rem;line-height:1.5;max-width:90%}
+.chat-ai{background:#f0f4ff;border-bottom-left-radius:4px}
+.chat-user{background:#4f6ef7;color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.chat-prompts{padding:12px 16px;border-top:1px solid #e5e7eb}
+.chat-prompts p{font-size:.72rem;color:#999;margin-bottom:6px}
+.prompt-btn{display:block;width:100%;text-align:left;padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;font-size:.78rem;cursor:pointer;margin-bottom:6px;transition:.2s}
+.prompt-btn:hover{background:#f0f4ff;border-color:#4f6ef7}
+.chat-input{display:flex;padding:12px 16px;border-top:1px solid #e5e7eb;gap:8px}
+.chat-input input{flex:1;padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:.82rem}
+.chat-input button{padding:8px 14px;background:#4f6ef7;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.8rem}
+.persona-section{margin-top:16px}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:#fff;border-radius:10px;padding:16px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.kpi .kpi-val{font-size:1.4rem;font-weight:700}
+.kpi .kpi-label{font-size:.72rem;color:#666;margin-top:4px}
+.task-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f8fafc;border-radius:8px;margin-bottom:8px;font-size:.82rem}
+.task-item input[type=checkbox]{width:16px;height:16px}
+.po-item{padding:12px;background:#f8fafc;border-radius:8px;margin-bottom:8px;font-size:.82rem}
+.po-item .po-title{font-weight:600;margin-bottom:4px}
+.po-item .po-detail{color:#666;font-size:.75rem}
+.progress-item{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:.82rem;border-bottom:1px solid #f0f0f0}
+.progress-bar{width:100px;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px}
+.hidden{display:none}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:12px 24px;border-radius:8px;font-size:.82rem;opacity:0;transition:.3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}
+.action-center-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.action-center-btn{padding:12px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;font-size:.78rem;font-weight:500;cursor:pointer;transition:.2s;text-align:left;display:flex;align-items:center;gap:8px}
+.action-center-btn:hover{background:#f0f4ff;border-color:#4f6ef7;transform:translateY(-1px)}
+.action-center-btn .ac-icon{font-size:1.1rem}
+.log-entry{padding:8px 12px;font-size:.78rem;border-left:3px solid #4f6ef7;margin-bottom:6px;background:#f8fafc;border-radius:0 6px 6px 0;animation:slideIn .3s}
+.log-entry .log-time{font-size:.7rem;color:#999}
+.log-entry.ai-auto{border-left-color:#8b5cf6;background:#f5f3ff}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.status-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:600;margin-left:8px}
+.status-executed{background:#dcfce7;color:#16a34a}
+.status-pending{background:#fef3c7;color:#d97706}
+</style>
+</head>
+<body>
+<!-- INFOR GLOBAL HEADER -->
+<div class="infor-global-header">
+<div class="infor-left">
+<div class="infor-logo"><span class="logo-icon">∎</span> Infor</div>
+<div class="infor-divider"></div>
+<div class="infor-app-label"><span class="app-badge">LN</span> Supply Chain Control Tower</div>
+</div>
+<div class="infor-center">Tenant 603 — Production <span class="dropdown-arrow">▼</span></div>
+<div class="infor-right">
+<button title="Notifications">🔔</button>
+<button title="Search">🔍</button>
+<button title="User Profile">👤</button>
+<button title="Menu">⋯</button>
+</div>
+</div>
+
+<!-- INFOR SECONDARY BAR -->
+<div class="infor-secondary-bar">
+<span>Control Tower Copilot</span>
+<span class="breadcrumb">/ AI Workspace</span>
+<span class="env-badge">ENV: PRD-603</span>
+</div>
+
+<div class="header">
+<div>
+<h1>Supply Chain Control Tower Copilot</h1>
+<div class="subtitle">AI-driven execution workspace — Detect · Decide · Act · Track</div>
+</div>
+<div class="persona-toggle">
+<button class="persona-btn active" onclick="switchPersona('coo')">COO</button>
+<button class="persona-btn" onclick="switchPersona('procurement')">Procurement Director</button>
+<button class="persona-btn" onclick="switchPersona('buyer')">Buyer</button>
+</div>
+</div>
+
+<!-- PELLA BRANDING -->
+<div class="pella-brand">
+<span class="pella-logo">◈ PELLA</span>
+<span class="pella-sub">Windows & Doors — Manufacturing Operations</span>
+</div>
+
+<div class="main-layout">
+<div class="content">
+<!-- TOP ROW -->
+<div class="row row-3">
+<div class="card">
+<h3><span class="icon severity-high"></span> AI Priority Feed</h3>
+<div class="alert-item high" id="alert-zhengzhou">
+<div class="alert-title">Supplier delay — production impact in 48 hrs</div>
+<div>Zhengzhou Metals missed shipment of steel housings (PO-4471). Line 3 will stall Thursday AM.</div>
+<div class="alert-meta">Severity: Critical · Detected 2 hrs ago</div>
+</div>
+<div class="alert-item high" id="alert-lxchem">
+<div class="alert-title">Quality hold on inbound lot — LX-Chem resin batch</div>
+<div>Batch #R-2290 flagged for viscosity deviation. 1,200 units in queue pending QC.</div>
+<div class="alert-meta">Severity: Critical · Auto-flagged by inspection</div>
+</div>
+<div class="alert-item med" id="alert-freight">
+<div class="alert-title">Freight rate spike — APAC corridor +38%</div>
+<div>Expedited air freight from Shenzhen hub now $8.40/kg. 3 open POs affected.</div>
+<div class="alert-meta">Severity: Warning · Rate updated 6 hrs ago</div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon severity-high"></span> Impact Analyzer</h3>
+<div class="impact-metric"><div class="value" id="rev-risk">$412K</div><div class="label">Revenue at risk (next 7 days)</div></div>
+<div class="impact-metric"><div class="value warn">3 lines</div><div class="label">Production lines threatened</div></div>
+<div class="impact-metric"><div class="value warn">14 orders</div><div class="label">Customer orders at risk of late delivery</div></div>
+<div style="font-size:.78rem;color:#666;margin-top:8px;line-height:1.5">
+<strong>Breakdown:</strong> Steel housing delay = $250K + 2 line stalls. Resin hold = $112K blocked. Freight spike adds $50K expedite costs.
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon severity-low"></span> Recommended Actions</h3>
+<div class="action-item" id="action-1">
+<div class="action-title">Activate Titan Alloys for steel housings</div>
+<div class="reason">Based on supplier reliability (Titan: 94% OTD) and confirmed capacity.</div>
+<div class="action-btns">
+<button class="btn-primary" onclick="executeAction('action-1','Created alternative sourcing request for Titan Alloys','alert-zhengzhou')">Create Alternative Sourcing Request</button>
+<button class="btn-warn" onclick="executeAction('action-1','Supplier collaboration request sent to Titan Alloys','alert-zhengzhou')">Trigger Supplier Collaboration</button>
+</div>
+</div>
+<div class="action-item" id="action-2">
+<div class="action-title">Reroute resin QC lot to expedited testing</div>
+<div class="reason">87% of viscosity deviations from LX-Chem pass extended testing. 4-hr fast lane available.</div>
+<div class="action-btns">
+<button class="btn-primary" onclick="executeAction('action-2','Notified Planner + Production Team about QC fast-lane','alert-lxchem')">Notify Planner + Production Team</button>
+<button class="btn-danger" onclick="executeAction('action-2','Supplier performance review initiated for LX-Chem','alert-lxchem')">Initiate Supplier Performance Review</button>
+</div>
+</div>
+<div class="action-item" id="action-3">
+<div class="action-title">Consolidate APAC shipments to cut expedite cost</div>
+<div class="reason">Combining PO-4502, 4510, 4515 into single FCL saves $18K vs. separate air.</div>
+<div class="action-btns">
+<button class="btn-primary" onclick="executeAction('action-3','PO quantities adjusted — shipments consolidated','alert-freight')">Adjust Purchase Order Quantity</button>
+<button class="btn-warn" onclick="executeAction('action-3','Requested updated delivery commitment from carriers','alert-freight')">Request Updated Delivery Commitment</button>
+</div>
+</div>
+<div class="action-item" id="action-4" style="background:#f5f3ff;border:1px dashed #8b5cf6">
+<div class="action-title">🤖 AI Auto-Action: Escalation triggered</div>
+<div class="reason">AI auto-escalated Zhengzhou Metals issue after no supplier response in 12 hours. Based on past disruption patterns.</div>
+<div class="action-btns">
+<button class="btn-primary" onclick="executeAction('action-4','Escalation confirmed and sent to Procurement Director')">Confirm Escalation</button>
+<button class="btn-outline" onclick="showToast('Escalation cancelled')">Dismiss</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ACTION CENTER -->
+<div class="row">
+<div class="card">
+<h3>⚡ Action Center — Execute Without Leaving</h3>
+<div class="action-center-grid">
+<button class="action-center-btn" onclick="quickAction('Supplier collaboration initiated — select supplier to begin')"><span class="ac-icon">🤝</span>Start Supplier Collaboration</button>
+<button class="action-center-btn" onclick="quickAction('Supplier review meeting scheduled for tomorrow 10:00 AM')"><span class="ac-icon">📅</span>Schedule Supplier Review Meeting</button>
+<button class="action-center-btn" onclick="quickAction('New sourcing request created — RFQ #2847 opened')"><span class="ac-icon">📋</span>Create New Sourcing Request</button>
+<button class="action-center-btn" onclick="quickAction('Risk assessment triggered — analyzing top 5 suppliers')"><span class="ac-icon">⚠️</span>Trigger Risk Assessment</button>
+<button class="action-center-btn" onclick="quickAction('Disruption simulation running — scenario: Zhengzhou 2-week outage')"><span class="ac-icon">🔬</span>Simulate Supply Disruption</button>
+<button class="action-center-btn" onclick="quickAction('Inventory reallocation initiated across 3 locations')"><span class="ac-icon">📦</span>Reallocate Inventory</button>
+</div>
+</div>
+</div>
+
+<!-- MIDDLE ROW -->
+<div class="row row-2">
+<div class="card">
+<h3>Supplier Risk Scorecard</h3>
+<div class="supplier-row"><div><strong>Zhengzhou Metals</strong></div><div><span class="risk-badge risk-high">High Risk</span><span class="trend">↑</span></div></div>
+<div class="supplier-row"><div><strong>LX-Chem Industries</strong></div><div><span class="risk-badge risk-med">Medium</span><span class="trend">↑</span></div></div>
+<div class="supplier-row"><div><strong>Titan Alloys Co.</strong></div><div><span class="risk-badge risk-low">Low Risk</span><span class="trend">↓</span></div></div>
+<div class="supplier-row"><div><strong>NovaPack Logistics</strong></div><div><span class="risk-badge risk-med">Medium</span><span class="trend">↑</span></div></div>
+<div class="supplier-row"><div><strong>Precision Motors Ltd.</strong></div><div><span class="risk-badge risk-low">Low Risk</span><span class="trend">→</span></div></div>
+</div>
+<div class="card">
+<h3>Inventory Confidence Score</h3>
+<div class="confidence-ring">
+<div class="confidence-value">62%</div>
+<div class="confidence-label">Confidence reduced due to supplier variability (+14% lead time variance),<br>open quality holds, and 2 inbound shipments with no tracking updates in 72 hrs.</div>
+</div>
+</div>
+</div>
+
+<!-- TIMELINE + ACTIVITY LOG -->
+<div class="row row-2">
+<div class="card">
+<h3>Exception Timeline</h3>
+<div class="timeline-item"><div class="timeline-dot severity-med"></div><div class="timeline-content"><strong>Jun 5</strong> — Zhengzhou confirms 4-day delay on PO-4471<div class="time">Carrier tracking shows vessel rerouted</div></div></div>
+<div class="timeline-item"><div class="timeline-dot severity-med"></div><div class="timeline-content"><strong>Jun 7</strong> — MRP flags material shortage for Line 3<div class="time">Auto-detected by planning system</div></div></div>
+<div class="timeline-item"><div class="timeline-dot severity-high"></div><div class="timeline-content"><strong>Jun 9</strong> — Safety stock consumed; no buffer remaining<div class="time">Inventory fell below min threshold</div></div></div>
+<div class="timeline-item"><div class="timeline-dot severity-high"></div><div class="timeline-content"><strong>Jun 10</strong> — Production schedule at risk; 14 orders impacted<div class="time">Customer delivery dates will slip</div></div></div>
+<div class="timeline-item"><div class="timeline-dot severity-low"></div><div class="timeline-content"><strong>Jun 10</strong> — AI Copilot recommends Titan Alloys activation<div class="time">Alternative supplier with capacity confirmed</div></div></div>
+</div>
+<div class="card">
+<h3>📋 Activity Log <span class="status-badge status-pending" id="log-count">0 actions</span></h3>
+<div id="activity-log">
+<div class="log-entry ai-auto"><div><strong>🤖 AI auto-escalated</strong> Zhengzhou Metals issue — no supplier response in 12 hrs</div><div class="log-time">10 min ago</div></div>
+<div class="log-entry"><div><strong>System:</strong> Freight rate spike detected on APAC corridor</div><div class="log-time">6 hrs ago</div></div>
+</div>
+</div>
+</div>
+
+<!-- PERSONA SECTIONS -->
+<div class="persona-section" id="persona-coo">
+<div class="kpi-row">
+<div class="kpi"><div class="kpi-val" style="color:#ef4444">$412K</div><div class="kpi-label">Revenue at Risk</div></div>
+<div class="kpi"><div class="kpi-val" style="color:#f59e0b">87%</div><div class="kpi-label">On-Time Delivery</div></div>
+<div class="kpi"><div class="kpi-val" style="color:#ef4444">+$50K</div><div class="kpi-label">Expedite Costs (WoW)</div></div>
+<div class="kpi"><div class="kpi-val" style="color:#22c55e">94%</div><div class="kpi-label">Plant Utilization</div></div>
+</div>
+<div class="card"><h3>Top Strategic Risks</h3>
+<div class="alert-item high"><div class="alert-title">Single-source dependency on Zhengzhou Metals</div><div>70% of housing supply from one source. No qualified backup until Titan activated.</div></div>
+<div class="alert-item med"><div class="alert-title">Inventory buffer erosion across 3 product families</div><div>Safety stock policy not recalibrated since Q1.</div></div>
+</div>
+</div>
+
+<div class="persona-section hidden" id="persona-procurement">
+<div class="row row-2">
+<div class="card"><h3>Supplier Exception Board</h3>
+<div class="alert-item high"><div class="alert-title">Zhengzhou Metals — PO-4471 delayed 4 days</div><div>Vessel rerouting. No proactive comm from supplier.</div></div>
+<div class="alert-item high"><div class="alert-title">LX-Chem — Batch #R-2290 quality hold</div><div>Viscosity out of spec. Awaiting lab results.</div></div>
+<div class="alert-item med"><div class="alert-title">NovaPack — 2 shipments untracked 72 hrs</div><div>No ASN update received.</div></div>
+</div>
+<div class="card"><h3>Action Progress Tracker</h3>
+<div class="progress-item"><div style="flex:1">Titan Alloys qualification</div><div class="progress-bar"><div class="progress-fill" style="width:75%;background:#4f6ef7"></div></div><div>75%</div></div>
+<div class="progress-item"><div style="flex:1">LX-Chem corrective action</div><div class="progress-bar"><div class="progress-fill" style="width:40%;background:#f59e0b"></div></div><div>40%</div></div>
+<div class="progress-item"><div style="flex:1">Freight consolidation</div><div class="progress-bar"><div class="progress-fill" style="width:90%;background:#22c55e"></div></div><div>90%</div></div>
+</div>
+</div>
+</div>
+
+<div class="persona-section hidden" id="persona-buyer">
+<div class="row row-2">
+<div class="card"><h3>My Tasks Today</h3>
+<div class="task-item"><input type="checkbox"><div><strong>Call Titan Alloys</strong> — Confirm capacity for 500 steel housings by Jun 14</div></div>
+<div class="task-item"><input type="checkbox"><div><strong>Follow up NovaPack</strong> — Request ASN update on PO-4488, PO-4492</div></div>
+<div class="task-item"><input type="checkbox"><div><strong>Review expedite request</strong> — Air freight quote for PO-4502 ($8.4K)</div></div>
+<div class="task-item"><input type="checkbox"><div><strong>Update PO-4471 delivery date</strong> — Push to Jun 15</div></div>
+</div>
+<div class="card"><h3>Smart PO Assistant</h3>
+<div class="po-item"><div class="po-title">PO-4471 → Split order</div><div class="po-detail">Move 200 units to Titan Alloys + keep 300 on original. Reduces line-down risk by 80%.</div><div class="action-btns" style="margin-top:8px"><button class="btn-success" onclick="executeAction(null,'PO-4471 split executed — 200 units rerouted to Titan Alloys')">Accept Split</button><button class="btn-outline" onclick="showToast('Editing quantities...')">Edit Qty</button></div></div>
+<div class="po-item"><div class="po-title">PO-4502, 4510, 4515 → Consolidate</div><div class="po-detail">Single FCL saves $18K freight. Adds 2 days (within buffer).</div><div class="action-btns" style="margin-top:8px"><button class="btn-success" onclick="executeAction(null,'Shipment consolidation approved — 3 POs merged')">Consolidate</button><button class="btn-outline" onclick="showToast('Viewing details...')">Details</button></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sidebar">
+<div class="sidebar-header">🤖 AI Assistant — Command & Execute</div>
+<div class="chat-messages" id="chatMessages">
+<div class="chat-msg chat-ai">I'm your Supply Chain Copilot. I can answer questions AND take action. Try:<br><br>• "Trigger supplier collaboration for Zhengzhou"<br>• "Show actions pending approval"<br>• "Schedule performance review with LX-Chem"</div>
+</div>
+<div class="chat-prompts">
+<p>Quick commands:</p>
+<button class="prompt-btn" onclick="sendPrompt('Trigger supplier collaboration for Zhengzhou Metals')">Trigger supplier collaboration for Zhengzhou</button>
+<button class="prompt-btn" onclick="sendPrompt('What\'s our biggest risk right now?')">What's our biggest risk right now?</button>
+<button class="prompt-btn" onclick="sendPrompt('Show actions pending approval')">Show actions pending approval</button>
+<button class="prompt-btn" onclick="sendPrompt('Schedule performance review with LX-Chem')">Schedule performance review with LX-Chem</button>
+</div>
+<div class="chat-input">
+<input type="text" id="chatInput" placeholder="Ask or command the copilot..." onkeydown="if(event.key==='Enter')sendChat()">
+<button onclick="sendChat()">Send</button>
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let actionCount=0;
+
+function switchPersona(p){
+document.querySelectorAll('.persona-btn').forEach(b=>b.classList.remove('active'));
+document.querySelectorAll('.persona-section').forEach(s=>s.classList.add('hidden'));
+event.target.classList.add('active');
+document.getElementById('persona-'+p).classList.remove('hidden');
+}
+
+function showToast(msg){
+const t=document.getElementById('toast');
+t.textContent=msg;t.classList.add('show');
+setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function addLogEntry(msg,isAI){
+actionCount++;
+document.getElementById('log-count').textContent=actionCount+' action'+(actionCount>1?'s':'');
+const log=document.getElementById('activity-log');
+const entry=document.createElement('div');
+entry.className='log-entry'+(isAI?' ai-auto':'');
+const now=new Date();
+const time=now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+entry.innerHTML='<div><strong>'+(isAI?'🤖 AI:':'👤 User:')+'</strong> '+msg+'</div><div class="log-time">'+time+'</div>';
+log.insertBefore(entry,log.firstChild);
+}
+
+function executeAction(actionId,logMsg,alertId){
+showToast('✓ '+logMsg);
+addLogEntry(logMsg,false);
+if(actionId){
+const el=document.getElementById(actionId);
+if(el){el.classList.add('executed');el.querySelectorAll('button').forEach(b=>{b.disabled=true});}
+}
+if(alertId){
+const alert=document.getElementById(alertId);
+if(alert){setTimeout(()=>{alert.classList.remove('high','med');alert.classList.add('resolved');},500);}
+}
+}
+
+function quickAction(msg){
+showToast('✓ '+msg);
+addLogEntry(msg,false);
+}
+
+const aiResponses={
+"What's our biggest risk right now?":"Your #1 risk is Zhengzhou Metals (PO-4471). Line 3 stalls in 48 hrs = $250K revenue exposure + 14 late orders. I recommend activating Titan Alloys NOW. Want me to trigger the sourcing request?",
+"Show actions pending approval":"You have 3 pending actions:\n\n1. Alternative sourcing → Titan Alloys (Critical)\n2. QC fast-lane for LX-Chem batch (Critical)\n3. APAC shipment consolidation (Warning)\n\nShall I approve all or walk through each?",
+"Trigger supplier collaboration for Zhengzhou Metals":"✓ Done. I've initiated a supplier collaboration request to Zhengzhou Metals requesting:\n• Updated delivery commitment for PO-4471\n• Root cause explanation for delay\n• Mitigation plan\n\nNotification sent via supplier portal. I'll alert you when they respond.",
+"Schedule performance review with LX-Chem":"✓ Scheduled. Supplier performance review meeting with LX-Chem set for Friday Jun 13 at 2:00 PM. Agenda auto-generated:\n• Quality deviation on Batch #R-2290\n• Corrective action plan review\n• Updated delivery timeline\n\nCalendar invite sent to your team."
+};
+
+function sendPrompt(text){
+addMsg(text,'chat-user');
+setTimeout(()=>{
+const resp=aiResponses[text]||"I'm processing that request. Analyzing current supply chain data...";
+addMsg(resp,'chat-ai');
+if(text.toLowerCase().includes('trigger')||text.toLowerCase().includes('schedule')){
+addLogEntry('AI executed: '+text,true);
+}
+},600);
+}
+
+function sendChat(){
+const input=document.getElementById('chatInput');
+if(!input.value.trim())return;
+const msg=input.value;input.value='';
+addMsg(msg,'chat-user');
+setTimeout(()=>{
+let resp;
+const lower=msg.toLowerCase();
+if(lower.includes('trigger')&&lower.includes('collab')){
+resp="✓ Supplier collaboration request triggered. I've sent the request via the supplier portal and will track response time. If no response in 12 hours, I'll auto-escalate.";
+addLogEntry('AI executed: Supplier collaboration triggered via chat command',true);
+}else if(lower.includes('schedule')&&lower.includes('review')){
+resp="✓ Performance review scheduled. Calendar invite sent. I've pre-loaded the supplier's quality and delivery metrics for the meeting.";
+addLogEntry('AI executed: Performance review scheduled via chat command',true);
+}else if(lower.includes('pending')||lower.includes('approval')){
+resp="3 actions pending your approval:\n1. Titan Alloys sourcing (Critical)\n2. LX-Chem QC fast-lane (Critical)\n3. APAC consolidation (Medium)\n\nSay 'approve all' or I can walk you through each.";
+}else if(lower.includes('approve all')){
+resp="✓ All 3 actions approved and executed:\n• Titan Alloys sourcing request sent\n• QC fast-lane initiated\n• Shipment consolidation confirmed\n\nActivity log updated.";
+addLogEntry('Bulk approval: 3 actions executed via AI assistant',false);
+}else{
+resp="Based on current data, I'd recommend prioritizing the Zhengzhou Metals situation — highest revenue impact at $250K. Want me to trigger the alternative sourcing workflow or initiate supplier collaboration?";
+}
+addMsg(resp,'chat-ai');
+},800);
+}
+
+function addMsg(text,cls){
+const div=document.createElement('div');
+div.className='chat-msg '+cls;
+div.textContent=text;
+const c=document.getElementById('chatMessages');
+c.appendChild(div);
+c.scrollTop=c.scrollHeight;
+}
+</script>
+</body>
+</html>
